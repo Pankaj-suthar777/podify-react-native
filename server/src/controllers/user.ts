@@ -14,7 +14,8 @@ import {
 
 import { RequestHandler } from "express";
 import { isValidObjectId } from "mongoose";
-import { PASSWORD_RESET_LINK } from "#/utils/variables";
+import { JWT_SECRET, PASSWORD_RESET_LINK } from "#/utils/variables";
+import jwt from "jsonwebtoken";
 
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { email, password, name } = req.body;
@@ -140,4 +141,37 @@ export const updatePassword: RequestHandler = async (req, res) => {
 
   sendPassResetSuccessEmail(user.name, user.email);
   res.json({ message: "Password resets successfully." });
+};
+
+export const signIn: RequestHandler = async (req, res) => {
+  const { password, email } = req.body;
+
+  const user = await User.findOne({
+    email,
+  });
+  if (!user) return res.status(403).json({ error: "Email/Password mismatch!" });
+
+  // compare the password
+  const matched = await user.comparePassword(password);
+  if (!matched)
+    return res.status(403).json({ error: "Email/Password mismatch!" });
+
+  // generate the token for later use.
+  const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+  user.tokens.push(token);
+
+  await user.save();
+
+  res.json({
+    profile: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      verified: user.verified,
+      avatar: user.avatar?.url,
+      followers: user.followers.length,
+      followings: user.followings.length,
+    },
+    token,
+  });
 };
