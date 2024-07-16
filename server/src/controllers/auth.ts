@@ -25,6 +25,11 @@ export const create: RequestHandler = async (req: CreateUser, res) => {
 
   const user = await User.create({ email, password, name });
 
+  const oldUser = await User.findOne({ email });
+  if (oldUser) {
+    return res.status(403).json({ error: "Email is already in use!" });
+  }
+
   // send email
   const token = generateToken();
 
@@ -72,6 +77,10 @@ export const sendReVerificationToken: RequestHandler = async (req, res) => {
 
   const user = await User.findById(userId);
   if (!user) return res.status(403).json({ error: "Invalid request!" });
+
+  if (user.verified) {
+    return res.status(422).json({ error: "Your account is already verified!" });
+  }
 
   await EmailVerificationToken.findOneAndDelete({
     owner: userId,
