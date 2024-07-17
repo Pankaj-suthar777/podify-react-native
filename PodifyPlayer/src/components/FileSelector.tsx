@@ -3,17 +3,18 @@ import {FC, ReactNode} from 'react';
 import {ViewStyle} from 'react-native';
 import {View, StyleSheet, Pressable, Text, StyleProp} from 'react-native';
 import DocumentPicker, {
-  DocumentPickerOptions,
+  // DocumentPickerOptions,
   DocumentPickerResponse,
 } from 'react-native-document-picker';
-import {SupportedPlatforms} from 'react-native-document-picker/lib/typescript/fileTypes';
+// import {SupportedPlatforms} from 'react-native-document-picker/lib/typescript/fileTypes';
 
 interface Props {
   icon?: ReactNode;
   btnTitle?: string;
   style?: StyleProp<ViewStyle>;
   onSelect(file: DocumentPickerResponse): void;
-  options: DocumentPickerOptions<SupportedPlatforms>;
+  // options: DocumentPickerOptions<SupportedPlatforms>;
+  options: any;
 }
 
 const FileSelector: FC<Props> = ({
