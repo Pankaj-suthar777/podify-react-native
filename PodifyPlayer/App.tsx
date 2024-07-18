@@ -1,16 +1,20 @@
 import React from 'react';
-
 import {Provider} from 'react-redux';
 import store from 'src/store';
 import AppNavigator from 'src/navigation';
 import AppContainer from '@components/AppContainer';
+import {QueryClient, QueryClientProvider} from 'react-query';
+
+const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <Provider store={store}>
-      <AppContainer>
-        <AppNavigator />
-      </AppContainer>
+      <QueryClientProvider client={queryClient}>
+        <AppContainer>
+          <AppNavigator />
+        </AppContainer>
+      </QueryClientProvider>
     </Provider>
   );
 };
