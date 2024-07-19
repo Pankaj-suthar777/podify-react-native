@@ -4,12 +4,16 @@ import colors from '@utils/colors';
 import {FC} from 'react';
 import {View, StyleSheet, Text, ScrollView} from 'react-native';
 import {useFetchLatestAudios} from 'src/hooks/query';
+import {AudioData} from 'src/types/audio';
 
-interface Props {}
+interface Props {
+  onAudioPress(item: AudioData, data: AudioData[]): void;
+  onAudioLongPress(item: AudioData, data: AudioData[]): void;
+}
 
 const dummyData = new Array(4).fill('');
 
-const LatestUploads: FC<Props> = props => {
+const LatestUploads: FC<Props> = ({onAudioLongPress, onAudioPress}) => {
   const {data, isLoading} = useFetchLatestAudios();
 
   if (isLoading)
@@ -32,7 +36,13 @@ const LatestUploads: FC<Props> = props => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {data?.map(item => {
           return (
-            <AudioCard key={item.id} title={item.title} poster={item.poster} />
+            <AudioCard
+              key={item.id}
+              title={item.title}
+              poster={item.poster}
+              onLongPress={() => onAudioLongPress(item, data)}
+              onPress={() => onAudioPress(item, data)}
+            />
           );
         })}
       </ScrollView>

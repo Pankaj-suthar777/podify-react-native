@@ -23,12 +23,12 @@ import cloudinary from "#/cloud";
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { email, password, name } = req.body;
 
-  const user = await User.create({ email, password, name });
-
   const oldUser = await User.findOne({ email });
   if (oldUser) {
     return res.status(403).json({ error: "Email is already in use!" });
   }
+
+  const user = await User.create({ email, password, name });
 
   // send email
   const token = generateToken();
@@ -38,7 +38,11 @@ export const create: RequestHandler = async (req: CreateUser, res) => {
     token,
   });
 
-  sendVerificationMail(token, { name, email, userId: user._id.toString() });
+  await sendVerificationMail(token, {
+    name,
+    email,
+    userId: user._id.toString(),
+  });
 
   res.status(201).json({ user: { id: user._id, name, email } });
 };

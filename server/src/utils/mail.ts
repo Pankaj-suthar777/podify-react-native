@@ -33,7 +33,7 @@ export const sendVerificationMail = async (token: string, profile: Profile) => {
 
   const welcomeMessage = `Hi ${name}, welcome to Podify! There are so much thing that we do for verified users. Use the given OTP to verify your email.`;
 
-  transport.sendMail({
+  await transport.sendMail({
     to: email,
     from: "auth@myapp.com",
     subject: "Welcome message",
@@ -73,7 +73,7 @@ export const sendForgetPasswordLink = async (options: Options) => {
   const message =
     "We just received a request that you forgot your password. No problem you can use the link below and create brand new password.";
 
-  transport.sendMail({
+  await transport.sendMail({
     to: email,
     from: VERIFICATION_EMAIL,
     subject: "Reset Password Link",
@@ -108,7 +108,7 @@ export const sendPassResetSuccessEmail = async (
 
   const message = `Dear ${name} we just updated your new password. You can now sign in with your new password.`;
 
-  transport.sendMail({
+  await transport.sendMail({
     to: email,
     from: VERIFICATION_EMAIL,
     subject: "Password Reset Successfully",

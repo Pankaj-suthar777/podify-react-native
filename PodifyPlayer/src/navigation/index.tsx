@@ -5,13 +5,13 @@ import colors from '@utils/colors';
 import {FC, useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import client from 'src/api/client';
+import client from '../api/client';
 import {
   getAuthState,
   updateBusyState,
   updateLoggedInState,
   updateProfile,
-} from 'src/store/auth';
+} from '../store/auth';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
 
