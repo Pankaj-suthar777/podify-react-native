@@ -1,9 +1,10 @@
 import catchAsyncError from 'src/api/catchError';
 import {useDispatch} from 'react-redux';
 import {upldateNotification} from 'src/store/notification';
-import client from 'src/api/client';
+import client, {getClient} from 'src/api/client';
 import {useQuery} from 'react-query';
-import {AudioData} from 'src/types/audio';
+import {AudioData, Playlist} from 'src/types/audio';
+import {getFromAsyncStorage, Keys} from '@utils/asyncStorage';
 
 const fetchLastest = async (): Promise<AudioData[]> => {
   const {data} = await client('/audio/latest');
@@ -30,6 +31,28 @@ export const useFetchRecommendedAudios = () => {
   const dispatch = useDispatch();
   return useQuery(['recommended'], {
     queryFn: () => fetchRecommended(),
+    onError(err) {
+      const errorMessage = catchAsyncError(err);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
+    },
+  });
+};
+
+const fetchPlaylist = async (): Promise<Playlist[]> => {
+  const client = await getClient();
+  const token = await getFromAsyncStorage(Keys.AUTH_TOKEN);
+  const {data} = await client('/playlist/by-profile', {
+    headers: {
+      Authorization: 'Bearer ' + token,
+    },
+  });
+  return data.playlist;
+};
+
+export const useFetchPlaylist = () => {
+  const dispatch = useDispatch();
+  return useQuery(['playlist'], {
+    queryFn: () => fetchPlaylist(),
     onError(err) {
       const errorMessage = catchAsyncError(err);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));

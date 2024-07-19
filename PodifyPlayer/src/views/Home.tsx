@@ -5,16 +5,24 @@ import RecommendedAudios from '@components/RecommendedAudios';
 import OptionModal from '@components/OptionModal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '@utils/colors';
-import {AudioData} from 'src/types/audio';
+import {AudioData, Playlist} from 'src/types/audio';
 import catchAsyncError from 'src/api/catchError';
 import {useDispatch} from 'react-redux';
 import {upldateNotification} from 'src/store/notification';
+import PlaylistForm, {PlaylistInfo} from '@components/PlaylistForm';
+import PlayListModal from '@components/PlaylistModal';
+import {getClient} from 'src/api/client';
+import {useFetchPlaylist} from 'src/hooks/query';
 
 const Home = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAudio, setSelectedAudio] = useState<AudioData>();
+  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+  const [showPlaylistForm, setShowPlaylistForm] = useState(false);
 
   const dispatch = useDispatch();
+
+  const {data} = useFetchPlaylist();
 
   const handleOnFavPress = async () => {
     if (!selectedAudio) return;
@@ -43,6 +51,44 @@ const Home = () => {
     setShowPlaylistModal(true);
   };
 
+  const handlePlaylistSubmit = async (value: PlaylistInfo) => {
+    if (!value.title.trim()) return;
+
+    try {
+      const client = await getClient();
+      const {data} = await client.post('/playlist/create', {
+        resId: selectedAudio?.id,
+        title: value.title,
+        visibility: value.private ? 'private' : 'public',
+      });
+      console.log(data);
+    } catch (error) {
+      const errorMessage = catchAsyncError(error);
+      console.log(errorMessage);
+    }
+  };
+
+  const updatePlaylist = async (item: Playlist) => {
+    try {
+      const client = await getClient();
+      const {data} = await client.patch('/playlist', {
+        id: item.id,
+        item: selectedAudio?.id,
+        title: item.title,
+        visibility: item.visibility,
+      });
+
+      setSelectedAudio(undefined);
+      setShowPlaylistModal(false);
+      dispatch(
+        upldateNotification({message: 'New audio added.', type: 'success'}),
+      );
+    } catch (error) {
+      const errorMessage = catchAsyncError(error);
+      console.log(errorMessage);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <LatestUploads
@@ -60,7 +106,7 @@ const Home = () => {
           {
             title: 'Add to Playlist',
             icon: 'playlist-music',
-            onPress: handleOnFavPress,
+            onPress: handleOnAddToPlaylist,
           },
           {
             title: 'Add to Favorite',
@@ -76,6 +122,27 @@ const Home = () => {
             </Pressable>
           );
         }}
+      />
+
+      <PlayListModal
+        visible={showPlaylistModal}
+        onRequestClose={() => {
+          setShowPlaylistModal(false);
+        }}
+        list={data || []}
+        onCreateNewPress={() => {
+          setShowPlaylistModal(false);
+          setShowPlaylistForm(true);
+        }}
+        onPlaylistPress={updatePlaylist}
+      />
+
+      <PlaylistForm
+        visible={showPlaylistForm}
+        onRequestClose={() => {
+          setShowPlaylistForm(false);
+        }}
+        onSubmit={handlePlaylistSubmit}
       />
     </View>
   );
