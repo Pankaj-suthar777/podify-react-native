@@ -93,15 +93,17 @@ const Home = () => {
     <View style={styles.container}>
       <LatestUploads
         onAudioLongPress={() => setShowOptions(true)}
-        onAudioPress={}
+        onAudioPress={() => {}}
       />
       <RecommendedAudios
         onAudioLongPress={item => handleOnLongPress(item)}
-        onAudioPress={}
+        onAudioPress={() => {}}
       />
       <OptionModal
         visible={showOptions}
-        onRequestClose={}
+        onRequestClose={() => {
+          setShowOptions(false);
+        }}
         options={[
           {
             title: 'Add to Playlist',

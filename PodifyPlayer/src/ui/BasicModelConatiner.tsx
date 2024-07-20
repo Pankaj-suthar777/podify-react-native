@@ -1,4 +1,4 @@
-import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Modal, Pressable, StyleSheet, View} from 'react-native';
 import React, {ReactNode} from 'react';
 import colors from '@utils/colors';
 

@@ -12,6 +12,7 @@ import colors from '@utils/colors';
 import catchAsyncError from 'src/api/catchError';
 import {upldateNotification} from 'src/store/notification';
 import {useDispatch} from 'react-redux';
+import {OtpInput} from 'react-native-otp-entry';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Verification'>;
 
@@ -121,7 +122,7 @@ const Verification: FC<Props> = ({route}) => {
   return (
     <AuthFormContainer heading="Please look at your email.">
       <View style={styles.inputContainer}>
-        {otpFields.map((_, index) => {
+        {/* {otpFields.map((_, index) => {
           return (
             <OTPField
               ref={activeOtpIndex === index ? inputRef : null}
@@ -135,7 +136,20 @@ const Verification: FC<Props> = ({route}) => {
               value={otp[index] || ''}
             />
           );
-        })}
+        })} */}
+
+        <OtpInput
+          numberOfDigits={6}
+          focusColor="green"
+          focusStickBlinkingDuration={500}
+          onTextChange={text => console.log(text)}
+          onFilled={text => {
+            setOtp(text.split(''));
+          }}
+          textInputProps={{
+            accessibilityLabel: 'One-Time Password',
+          }}
+        />
       </View>
 
       <AppButton busy={submitting} title="Submit" onPress={handleSubmit} />
