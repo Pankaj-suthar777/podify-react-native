@@ -1,7 +1,7 @@
 import AppHeader from '@components/AppHeader';
 import AvatarField from '@ui/AvatarField';
 import colors from '@utils/colors';
-import React, {FC, useEffect, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, Pressable, TextInput} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -16,9 +16,11 @@ import {
   getAuthState,
 } from 'src/store/auth';
 import {useDispatch, useSelector} from 'react-redux';
-import {Keys, removeFromAsyncStorage} from '../../utils/asyncStorage';
+import {Keys, removeFromAsyncStorage} from '@utils/asyncStorage';
 import deepEqual from 'deep-equal';
 import ImagePicker from 'react-native-image-crop-picker';
+import {getPermissionToReadImages} from '@utils/helper';
+import ReVerificationLink from '@components/ReVerificationLink';
 
 interface Props {}
 interface ProfileInfo {
@@ -90,6 +92,21 @@ const ProfileSettings: FC<Props> = props => {
     setBusy(false);
   };
 
+  const handleImageSelect = async () => {
+    try {
+      await getPermissionToReadImages();
+      const {path} = await ImagePicker.openPicker({
+        cropping: true,
+        width: 300,
+        height: 300,
+      });
+
+      setUserInfo({...userInfo, avatar: path});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (profile) setUserInfo({name: profile.name, avatar: profile.avatar});
   }, [profile]);
@@ -105,7 +122,7 @@ const ProfileSettings: FC<Props> = props => {
       <View style={styles.settingOptionsContainer}>
         <View style={styles.avatarContainer}>
           <AvatarField source={userInfo.avatar} />
-          <Pressable style={styles.paddingLeft}>
+          <Pressable onPress={handleImageSelect} style={styles.paddingLeft}>
             <Text style={styles.linkText}>Update Profile Image</Text>
           </Pressable>
         </View>
@@ -116,6 +133,11 @@ const ProfileSettings: FC<Props> = props => {
         />
         <View style={styles.emailConainer}>
           <Text style={styles.email}>{profile?.email}</Text>
+          {profile?.verified ? (
+            <MaterialIcon name="verified" size={15} color={colors.SECONDARY} />
+          ) : (
+            <ReVerificationLink linkTitle="verify" activeAtFirst />
+          )}
         </View>
       </View>
 
