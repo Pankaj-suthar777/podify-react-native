@@ -1,5 +1,5 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import LatestUploads from '@components/LatestUploads';
 import RecommendedAudios from '@components/RecommendedAudios';
 import OptionModal from '@components/OptionModal';
@@ -13,12 +13,15 @@ import PlaylistForm, {PlaylistInfo} from '@components/PlaylistForm';
 import PlayListModal from '@components/PlaylistModal';
 import {getClient} from 'src/api/client';
 import {useFetchPlaylist} from 'src/hooks/query';
+import TrackPlayer, {Track} from 'react-native-track-player';
+import useAudioController from 'src/hooks/useAudioController';
 
 const Home = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAudio, setSelectedAudio] = useState<AudioData>();
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [showPlaylistForm, setShowPlaylistForm] = useState(false);
+  const {onAudioPress} = useAudioController();
 
   const dispatch = useDispatch();
 
@@ -89,15 +92,22 @@ const Home = () => {
     }
   };
 
+  useEffect(() => {
+    const setupPlayer = async () => {
+      await TrackPlayer.setupPlayer();
+    };
+    setupPlayer();
+  }, []);
+
   return (
     <View style={styles.container}>
       <LatestUploads
         onAudioLongPress={() => setShowOptions(true)}
-        onAudioPress={() => {}}
+        onAudioPress={onAudioPress}
       />
       <RecommendedAudios
         onAudioLongPress={item => handleOnLongPress(item)}
-        onAudioPress={() => {}}
+        onAudioPress={onAudioPress}
       />
       <OptionModal
         visible={showOptions}
