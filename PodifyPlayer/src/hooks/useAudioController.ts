@@ -61,6 +61,7 @@ const useAudioController = () => {
 
     if (playbackState === State.Paused && onGoingAudio?.id === item.id) {
       // same audio no need to load handle resume
+
       return await TrackPlayer.play();
     }
 
