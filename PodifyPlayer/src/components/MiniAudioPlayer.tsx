@@ -10,7 +10,6 @@ import Loader from '@ui/Loader';
 import {mapRange} from '@utils/math';
 import {useProgress} from 'react-native-track-player';
 import AudioPlayer from './AudioPlayer';
-// import AudioPlayer from './AudioPlayer';
 // import CurrentAudioList from './CurrentAudioList';
 
 interface Props {}

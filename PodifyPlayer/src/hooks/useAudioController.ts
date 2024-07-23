@@ -41,7 +41,7 @@ const useAudioController = () => {
   const isPalying = playbackState === State.Playing;
   const isPaused = playbackState === State.Paused;
   const isBusy =
-    playbackState === State.Buffering || playbackState === State.Connecting;
+    playbackState === State.Buffering || playbackState === State.Loading;
 
   const onAudioPress = async (item: AudioData, data: AudioData[]) => {
     if (!isPalyerReady) {

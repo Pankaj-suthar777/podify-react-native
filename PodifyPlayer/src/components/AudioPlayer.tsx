@@ -8,6 +8,12 @@ import useAudioController from 'src/hooks/useAudioController';
 import AppLink from '@ui/AppLink';
 import formatDuration from 'format-duration';
 import {useProgress} from 'react-native-track-player';
+import Slider from '@react-native-community/slider';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import PlayerControler from '@ui/PlayerControler';
+import Loader from '@ui/Loader';
+import PlayPauseBtn from '@ui/PlayPauseBtn';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 interface Props {
   visible: boolean;
@@ -40,6 +46,23 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
   const {duration, position} = useProgress();
   const dispatch = useDispatch();
 
+  const updateSeek = async (value: number) => {
+    await seekTo(value);
+  };
+
+  const handleSkipTo = async (skipType: 'forward' | 'reverse') => {
+    if (skipType === 'forward') await skipTo(10);
+    if (skipType === 'reverse') await skipTo(-10);
+  };
+
+  const handleOnNextPress = async () => {
+    await onNextPress();
+  };
+
+  const handleOnPreviousPress = async () => {
+    await onPreviousPress();
+  };
+
   return (
     <AppModal animation visible={visible} onRequestClose={onRequestClose}>
       <View style={styles.container}>
@@ -55,6 +78,59 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
               {fromattedDuration(duration * 1000)}
             </Text>
           </View>
+
+          <Slider
+            minimumValue={0}
+            maximumValue={duration}
+            minimumTrackTintColor={colors.CONTRAST}
+            maximumTrackTintColor={colors.INACTIVE_CONTRAST}
+            value={position}
+            onSlidingComplete={updateSeek}
+          />
+        </View>
+        <View style={styles.controles}>
+          {/* Previous */}
+          <PlayerControler onPress={handleOnPreviousPress} ignoreContainer>
+            <AntDesign name="stepbackward" size={24} color={colors.CONTRAST} />
+          </PlayerControler>
+
+          {/* Skip Time Left */}
+          <PlayerControler
+            onPress={() => handleSkipTo('reverse')}
+            ignoreContainer>
+            <FontAwesome name="rotate-left" size={18} color={colors.CONTRAST} />
+            <Text style={styles.skipText}>-10s</Text>
+          </PlayerControler>
+
+          {/* Play Pause */}
+          <PlayerControler>
+            {isBusy ? (
+              <Loader color={colors.PRIMARY} />
+            ) : (
+              <PlayPauseBtn
+                playing={isPalying}
+                onPress={togglePlayPause}
+                color={colors.PRIMARY}
+              />
+            )}
+          </PlayerControler>
+
+          {/* Skip Time Right */}
+          <PlayerControler
+            onPress={() => handleSkipTo('forward')}
+            ignoreContainer>
+            <FontAwesome
+              name="rotate-right"
+              size={18}
+              color={colors.CONTRAST}
+            />
+            <Text style={styles.skipText}>+10s</Text>
+          </PlayerControler>
+
+          {/* Next */}
+          <PlayerControler onPress={handleOnNextPress} ignoreContainer>
+            <AntDesign name="stepforward" size={24} color={colors.CONTRAST} />
+          </PlayerControler>
         </View>
       </View>
     </AppModal>
