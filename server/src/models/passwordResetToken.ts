@@ -1,7 +1,6 @@
 import { Model, model, ObjectId, Schema } from "mongoose";
 import { hash, compare } from "bcrypt";
 
-// interface (typescript)
 interface PasswordResetTokenDocument {
   owner: ObjectId;
   token: string;
@@ -30,7 +29,7 @@ const passwordResetTokenSchema = new Schema<
   },
   createdAt: {
     type: Date,
-    expires: 3600, // 60 min * 60 sec = 3600s
+    expires: 3600,
     default: Date.now(),
   },
 });
@@ -40,7 +39,6 @@ passwordResetTokenSchema.pre("save", async function (next) {
   if (this.isModified("token")) {
     this.token = await hash(this.token, 10);
   }
-
   next();
 });
 

@@ -1,5 +1,4 @@
 import { generateTemplate } from "#/mail/template";
-import emailVerificationToken from "#/models/emailVerificationToken";
 import path from "path";
 import nodemailer from "nodemailer";
 import {
