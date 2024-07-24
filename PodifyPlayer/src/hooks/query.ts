@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux';
 import {upldateNotification} from 'src/store/notification';
 import client, {getClient} from 'src/api/client';
 import {useQuery} from 'react-query';
-import {AudioData, Playlist} from 'src/types/audio';
+import {AudioData, History, Playlist} from 'src/types/audio';
 import {getFromAsyncStorage, Keys} from '@utils/asyncStorage';
 
 const fetchLastest = async (): Promise<AudioData[]> => {
@@ -87,6 +87,24 @@ export const useFetchFavorite = () => {
   const dispatch = useDispatch();
   return useQuery(['favorite'], {
     queryFn: () => fetchFavorites(),
+    onError(err) {
+      console.log(err);
+      const errorMessage = catchAsyncError(err);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
+    },
+  });
+};
+
+const fetchHistories = async (): Promise<History[]> => {
+  const client = await getClient();
+  const {data} = await client('/history');
+  return data.histories;
+};
+
+export const useFetchHistories = () => {
+  const dispatch = useDispatch();
+  return useQuery(['histories'], {
+    queryFn: () => fetchHistories(),
     onError(err) {
       console.log(err);
       const errorMessage = catchAsyncError(err);

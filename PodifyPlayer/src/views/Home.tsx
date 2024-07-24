@@ -1,5 +1,5 @@
-import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {Pressable, ScrollView, StyleSheet, Text} from 'react-native';
+import React, {useState} from 'react';
 import LatestUploads from '@components/LatestUploads';
 import RecommendedAudios from '@components/RecommendedAudios';
 import OptionModal from '@components/OptionModal';
@@ -13,7 +13,6 @@ import PlaylistForm, {PlaylistInfo} from '@components/PlaylistForm';
 import PlayListModal from '@components/PlaylistModal';
 import {getClient} from 'src/api/client';
 import {useFetchPlaylist} from 'src/hooks/query';
-import TrackPlayer, {Track} from 'react-native-track-player';
 import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
 
@@ -35,7 +34,7 @@ const Home = () => {
     try {
       const client = await getClient();
 
-      const {data} = await client.post('/favorite?audioId=' + selectedAudio.id);
+      await client.post('/favorite?audioId=' + selectedAudio.id);
     } catch (error) {
       const errorMessage = catchAsyncError(error);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
@@ -60,7 +59,7 @@ const Home = () => {
 
     try {
       const client = await getClient();
-      const {data} = await client.post('/playlist/create', {
+      await client.post('/playlist/create', {
         resId: selectedAudio?.id,
         title: value.title,
         visibility: value.private ? 'private' : 'public',
@@ -75,7 +74,7 @@ const Home = () => {
   const updatePlaylist = async (item: Playlist) => {
     try {
       const client = await getClient();
-      const {data} = await client.patch('/playlist', {
+      await client.patch('/playlist', {
         id: item.id,
         item: selectedAudio?.id,
         title: item.title,
