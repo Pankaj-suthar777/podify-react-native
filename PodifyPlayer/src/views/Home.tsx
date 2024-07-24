@@ -93,13 +93,6 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    const setupPlayer = async () => {
-      await TrackPlayer.setupPlayer();
-    };
-    setupPlayer();
-  }, []);
-
   return (
     <AppView>
       <ScrollView contentContainerStyle={styles.container}>

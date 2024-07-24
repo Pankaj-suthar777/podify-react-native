@@ -1,9 +1,9 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {FC, useState} from 'react';
 import AppModal from '@ui/AppModal';
 import colors from '@utils/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {getPlayerState} from 'src/store/player';
+import {getPlayerState, updatePlaybackRate} from 'src/store/player';
 import useAudioController from 'src/hooks/useAudioController';
 import AppLink from '@ui/AppLink';
 import formatDuration from 'format-duration';
@@ -14,6 +14,9 @@ import PlayerControler from '@ui/PlayerControler';
 import Loader from '@ui/Loader';
 import PlayPauseBtn from '@ui/PlayPauseBtn';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import PlaybackRateSelector from '@ui/PlaybackRateSelector';
+import AudioInfoContainer from './AudioInfoContainer';
+import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
   visible: boolean;
@@ -27,7 +30,11 @@ const fromattedDuration = (duration = 0) => {
   });
 };
 
-const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
+const AudioPlayer: FC<Props> = ({
+  visible,
+  onRequestClose,
+  onListOptionPress,
+}) => {
   const [showAudioInfo, setShowAudioInfo] = useState(false);
   const {onGoingAudio, playbackRate} = useSelector(getPlayerState);
   const {
@@ -63,9 +70,23 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
     await onPreviousPress();
   };
 
+  const onPlaybackPress = async (rate: number) => {
+    await setPlaybackRate(rate);
+    dispatch(updatePlaybackRate(rate));
+  };
+
   return (
     <AppModal animation visible={visible} onRequestClose={onRequestClose}>
       <View style={styles.container}>
+        <Pressable
+          onPress={() => setShowAudioInfo(true)}
+          style={styles.infoBtn}>
+          <AntDesign name="infocirlceo" color={colors.CONTRAST} size={24} />
+        </Pressable>
+        <AudioInfoContainer
+          visible={showAudioInfo}
+          closeHandler={setShowAudioInfo}
+        />
         <Image source={source} style={styles.poster} />
         <View style={styles.contentContainer}>
           <Text style={styles.title}>{onGoingAudio?.title}</Text>
@@ -87,50 +108,75 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose}) => {
             value={position}
             onSlidingComplete={updateSeek}
           />
-        </View>
-        <View style={styles.controles}>
-          {/* Previous */}
-          <PlayerControler onPress={handleOnPreviousPress} ignoreContainer>
-            <AntDesign name="stepbackward" size={24} color={colors.CONTRAST} />
-          </PlayerControler>
 
-          {/* Skip Time Left */}
-          <PlayerControler
-            onPress={() => handleSkipTo('reverse')}
-            ignoreContainer>
-            <FontAwesome name="rotate-left" size={18} color={colors.CONTRAST} />
-            <Text style={styles.skipText}>-10s</Text>
-          </PlayerControler>
-
-          {/* Play Pause */}
-          <PlayerControler>
-            {isBusy ? (
-              <Loader color={colors.PRIMARY} />
-            ) : (
-              <PlayPauseBtn
-                playing={isPalying}
-                onPress={togglePlayPause}
-                color={colors.PRIMARY}
+          <View style={styles.controles}>
+            {/* Previous */}
+            <PlayerControler onPress={handleOnPreviousPress} ignoreContainer>
+              <AntDesign
+                name="stepbackward"
+                size={24}
+                color={colors.CONTRAST}
               />
-            )}
-          </PlayerControler>
+            </PlayerControler>
 
-          {/* Skip Time Right */}
-          <PlayerControler
-            onPress={() => handleSkipTo('forward')}
-            ignoreContainer>
-            <FontAwesome
-              name="rotate-right"
-              size={18}
-              color={colors.CONTRAST}
-            />
-            <Text style={styles.skipText}>+10s</Text>
-          </PlayerControler>
+            {/* Skip Time Left */}
+            <PlayerControler
+              onPress={() => handleSkipTo('reverse')}
+              ignoreContainer>
+              <FontAwesome
+                name="rotate-left"
+                size={18}
+                color={colors.CONTRAST}
+              />
+              <Text style={styles.skipText}>-10s</Text>
+            </PlayerControler>
 
-          {/* Next */}
-          <PlayerControler onPress={handleOnNextPress} ignoreContainer>
-            <AntDesign name="stepforward" size={24} color={colors.CONTRAST} />
-          </PlayerControler>
+            {/* Play Pause */}
+            <PlayerControler>
+              {isBusy ? (
+                <Loader color={colors.PRIMARY} />
+              ) : (
+                <PlayPauseBtn
+                  playing={isPalying}
+                  onPress={togglePlayPause}
+                  color={colors.PRIMARY}
+                />
+              )}
+            </PlayerControler>
+
+            {/* Skip Time Right */}
+            <PlayerControler
+              onPress={() => handleSkipTo('forward')}
+              ignoreContainer>
+              <FontAwesome
+                name="rotate-right"
+                size={18}
+                color={colors.CONTRAST}
+              />
+              <Text style={styles.skipText}>+10s</Text>
+            </PlayerControler>
+
+            {/* Next */}
+            <PlayerControler onPress={handleOnNextPress} ignoreContainer>
+              <AntDesign name="stepforward" size={24} color={colors.CONTRAST} />
+            </PlayerControler>
+          </View>
+
+          <PlaybackRateSelector
+            onPress={onPlaybackPress}
+            activeRate={playbackRate.toString()}
+            containerStyle={{marginTop: 20}}
+          />
+
+          <View style={styles.listOptionBtnContainer}>
+            <PlayerControler onPress={onListOptionPress} ignoreContainer>
+              <MaterialComIcon
+                name="playlist-music"
+                size={24}
+                color={colors.CONTRAST}
+              />
+            </PlayerControler>
+          </View>
         </View>
       </View>
     </AppModal>

@@ -2,22 +2,24 @@ import colors from '../utils/colors';
 import React, {FC} from 'react';
 import {View, StyleSheet, Pressable, Image, Text} from 'react-native';
 import {AudioData} from '../types/audio';
+import PlayAnimation from './PlayAnimation';
 
 interface Props {
   audio: AudioData;
   onPress?(): void;
+  isPlaying?: boolean;
 }
 
-const AudioListItem: FC<Props> = ({audio, onPress}) => {
-  //   const getSource = (poster?: string) => {
-  //     return poster ? {uri: poster} : require('../assets/music_small.png');
-  //   };
+const AudioListItem: FC<Props> = ({audio, onPress, isPlaying = false}) => {
   const getSource = (poster?: string) => {
     return {uri: poster};
   };
   return (
     <Pressable onPress={onPress} style={styles.listItem}>
-      <Image source={getSource(audio.poster)} style={styles.poster} />
+      <View>
+        <Image source={getSource(audio.poster)} style={styles.poster} />
+        <PlayAnimation visible={isPlaying} />
+      </View>
       <View style={styles.titleContainer}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {audio.title}
