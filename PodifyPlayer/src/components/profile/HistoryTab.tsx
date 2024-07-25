@@ -1,4 +1,11 @@
-import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useFetchHistories} from 'src/hooks/query';
 import EmptyRecords from '@ui/EmptyRecords';
@@ -66,7 +73,9 @@ const HistoryTab = () => {
     removeMutation.mutate([...selectedHistories]);
   };
 
-  if (isLoading) return <AudioListLoadingUI />;
+  const handleOnRefresh = () => {
+    queryClient.invalidateQueries({queryKey: ['histories']});
+  };
 
   useEffect(() => {
     const unselectHistories = () => {
@@ -78,8 +87,7 @@ const HistoryTab = () => {
     };
   }, []);
 
-  if (!data || !data[0]?.audios.length)
-    return <EmptyRecords title="There is no history!" />;
+  if (isLoading) return <AudioListLoadingUI />;
 
   return (
     <>
@@ -90,8 +98,17 @@ const HistoryTab = () => {
           <Text style={styles.removeBtnText}>Remove</Text>
         </Pressable>
       ) : null}
-      <ScrollView>
-        {data.map((item, index) => {
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            tintColor={colors.CONTRAST}
+            onRefresh={handleOnRefresh}
+          />
+        }>
+        {noData ? <EmptyRecords title="There is no history!" /> : null}
+
+        {data?.map((item, index) => {
           return (
             <View key={item.date + index}>
               <Text style={styles.date}>{item.date}</Text>
