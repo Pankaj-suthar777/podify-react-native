@@ -119,20 +119,15 @@ const HistoryTab = () => {
                       onLongPress={() => handleOnLongPress(audio)}
                       onPress={() => handleOnPress(audio)}
                       key={audio.id + i}
-                      style={styles.history}>
-                      <Text
-                        style={[
-                          styles.historyTitle,
-                          {
-                            backgroundColor: selectedHistories.includes(
-                              audio.id,
-                            )
-                              ? colors.INACTIVE_CONTRAST
-                              : colors.OVERLAY,
-                          },
-                        ]}>
-                        {audio.title}
-                      </Text>
+                      style={[
+                        styles.history,
+                        {
+                          backgroundColor: selectedHistories.includes(audio.id)
+                            ? colors.INACTIVE_CONTRAST
+                            : colors.OVERLAY,
+                        },
+                      ]}>
+                      <Text style={styles.historyTitle}>{audio.title}</Text>
                       <Pressable
                         onPress={() => handleSingleHistoryRemove(audio)}>
                         <AntDesign name="close" color={colors.CONTRAST} />
@@ -144,7 +139,6 @@ const HistoryTab = () => {
             </View>
           );
         })}
-        <Text>HistoryTab</Text>
       </ScrollView>
     </>
   );
