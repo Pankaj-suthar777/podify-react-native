@@ -1,15 +1,14 @@
-import { Model, model } from "mongoose";
-import { ObjectId, Schema } from "mongoose";
+import { Model, model, models, ObjectId, Schema } from "mongoose";
 
 export type historyType = { audio: ObjectId; progress: number; date: Date };
 
-interface HistoryObject {
+interface HistoryDocument {
   owner: ObjectId;
   last: historyType;
   all: historyType[];
 }
 
-const historySchema = new Schema<HistoryObject>(
+const historySchema = new Schema<HistoryDocument>(
   {
     owner: {
       type: Schema.Types.ObjectId,
@@ -17,23 +16,27 @@ const historySchema = new Schema<HistoryObject>(
       required: true,
     },
     last: {
-      audio: {
-        type: Schema.Types.ObjectId,
-        ref: "Audio",
+      audio: { type: Schema.Types.ObjectId, ref: "Audio" },
+      progress: Number,
+      date: {
+        type: Date,
         required: true,
       },
     },
     all: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Audio",
-        required: true,
+        audio: { type: Schema.Types.ObjectId, ref: "Audio" },
+        progress: Number,
+        date: {
+          type: Date,
+          required: true,
+        },
       },
     ],
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export default model("History", historySchema) as Model<HistoryObject>;
+const History = models.History || model("History", historySchema);
+
+export default History as Model<HistoryDocument>;

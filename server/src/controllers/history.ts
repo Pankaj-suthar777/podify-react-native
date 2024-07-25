@@ -1,13 +1,18 @@
 import { paginationQuery } from "#/@types/misc";
 import History, { historyType } from "#/models/history";
 import { RequestHandler } from "express";
+import mongoose from "mongoose";
 
 export const updateHistory: RequestHandler = async (req, res) => {
   const oldHistory = await History.findOne({ owner: req.user.id });
 
   const { audio, progress, date } = req.body;
 
-  const history: historyType = { audio, progress, date };
+  const history: historyType = {
+    audio,
+    progress,
+    date,
+  };
 
   if (!oldHistory) {
     await History.create({
