@@ -9,6 +9,7 @@ import colors from '@utils/colors';
 import ProfileContainer from '@components/ProfileContainer';
 import {useSelector} from 'react-redux';
 import {getAuthState} from 'src/store/auth';
+import AppView from '@components/AppView';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -17,19 +18,21 @@ interface Props {}
 const Profile: FC<Props> = props => {
   const {profile} = useSelector(getAuthState);
   return (
-    <View style={styles.container}>
-      <ProfileContainer profile={profile} />
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: styles.tabbarStyle,
-          tabBarLabelStyle: styles.tabBarLabelStyle,
-        }}>
-        <Tab.Screen name="Uploads" component={UploadsTab} />
-        <Tab.Screen name="Playlist" component={PlaylistTab} />
-        <Tab.Screen name="Favorites" component={FavoriteTab} />
-        <Tab.Screen name="History" component={HistoryTab} />
-      </Tab.Navigator>
-    </View>
+    <AppView>
+      <View style={styles.container}>
+        <ProfileContainer profile={profile} />
+        <Tab.Navigator
+          screenOptions={{
+            tabBarStyle: styles.tabbarStyle,
+            tabBarLabelStyle: styles.tabBarLabelStyle,
+          }}>
+          <Tab.Screen name="Uploads" component={UploadsTab} />
+          <Tab.Screen name="Playlist" component={PlaylistTab} />
+          <Tab.Screen name="Favorites" component={FavoriteTab} />
+          <Tab.Screen name="History" component={HistoryTab} />
+        </Tab.Navigator>
+      </View>
+    </AppView>
   );
 };
 

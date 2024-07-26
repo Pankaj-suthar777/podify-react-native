@@ -16,6 +16,7 @@ import {useFetchPlaylist} from 'src/hooks/query';
 import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
 import RecentlyPlayed from '@components/RecentlyPlayed';
+import RecommendedPlaylist from '@components/RecommendedPlaylist';
 
 const Home = () => {
   const [showOptions, setShowOptions] = useState(false);
@@ -112,6 +113,10 @@ const Home = () => {
             onAudioLongPress={item => handleOnLongPress(item)}
             onAudioPress={onAudioPress}
           />
+        </View>
+
+        <View style={styles.space}>
+          <RecommendedPlaylist />
         </View>
 
         <OptionModal
