@@ -1,6 +1,7 @@
 import colors from '@utils/colors';
 import {FC} from 'react';
 import {
+  View,
   StyleSheet,
   Pressable,
   Image,
@@ -13,19 +14,19 @@ import PlayAnimation from './PlayAnimation';
 interface Props {
   title: string;
   poster?: string;
-  onPress?(): void;
-  onLongPress?(): void;
   playing?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
+  onPress?(): void;
+  onLongPress?(): void;
 }
 
 const AudioCard: FC<Props> = ({
   title,
-  poster,
-  onLongPress,
-  onPress,
   playing = false,
+  poster,
   containerStyle,
+  onPress,
+  onLongPress,
 }) => {
   const source = poster ? {uri: poster} : require('../assets/music.png');
   return (
@@ -33,8 +34,10 @@ const AudioCard: FC<Props> = ({
       onPress={onPress}
       onLongPress={onLongPress}
       style={[styles.container, containerStyle]}>
-      <Image source={source} style={styles.poster} />
-      <PlayAnimation visible={playing} />
+      <View>
+        <Image source={source} style={styles.poster} />
+        <PlayAnimation visible={playing} />
+      </View>
       <Text numberOfLines={2} ellipsizeMode="tail" style={styles.title}>
         {title}
       </Text>
@@ -44,7 +47,7 @@ const AudioCard: FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {width: 100, marginRight: 15},
-  poster: {height: 100, aspectRatio: 1, borderRadius: 7},
+  poster: {width: '100%', aspectRatio: 1, borderRadius: 7},
   title: {
     color: colors.CONTRAST,
     fontWeight: '500',

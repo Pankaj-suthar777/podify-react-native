@@ -1,4 +1,4 @@
-import {Pressable, ScrollView, StyleSheet, Text} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import LatestUploads from '@components/LatestUploads';
 import RecommendedAudios from '@components/RecommendedAudios';
@@ -15,6 +15,7 @@ import {getClient} from 'src/api/client';
 import {useFetchPlaylist} from 'src/hooks/query';
 import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
+import RecentlyPlayed from '@components/RecentlyPlayed';
 
 const Home = () => {
   const [showOptions, setShowOptions] = useState(false);
@@ -95,14 +96,24 @@ const Home = () => {
   return (
     <AppView>
       <ScrollView contentContainerStyle={styles.container}>
-        <LatestUploads
-          onAudioLongPress={() => setShowOptions(true)}
-          onAudioPress={onAudioPress}
-        />
-        <RecommendedAudios
-          onAudioLongPress={item => handleOnLongPress(item)}
-          onAudioPress={onAudioPress}
-        />
+        <View style={styles.space}>
+          <RecentlyPlayed />
+        </View>
+
+        <View style={styles.space}>
+          <LatestUploads
+            onAudioLongPress={() => setShowOptions(true)}
+            onAudioPress={onAudioPress}
+          />
+        </View>
+
+        <View style={styles.space}>
+          <RecommendedAudios
+            onAudioLongPress={item => handleOnLongPress(item)}
+            onAudioPress={onAudioPress}
+          />
+        </View>
+
         <OptionModal
           visible={showOptions}
           onRequestClose={() => {
@@ -161,14 +172,13 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
   },
+  space: {
+    marginBottom: 15,
+  },
   optionContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
   },
-  optionLabel: {
-    color: colors.PRIMARY,
-    fontSize: 16,
-    marginLeft: 5,
-  },
+  optionLabel: {color: colors.PRIMARY, fontSize: 16, marginLeft: 5},
 });

@@ -23,7 +23,7 @@ export const useFetchLatestAudios = () => {
 };
 
 const fetchRecommended = async (): Promise<AudioData[]> => {
-  const {data} = await client('/audio/latest');
+  const {data} = await client('/profile/recommended');
   return data.audios;
 };
 
@@ -110,5 +110,57 @@ export const useFetchHistories = () => {
       const errorMessage = catchAsyncError(err);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
     },
+  });
+};
+
+const fetchRecentlyPlayed = async (): Promise<AudioData[]> => {
+  const client = await getClient();
+  const {data} = await client('/history/recently-played');
+  return data.audios;
+};
+
+export const useFetchRecentlyPlayed = () => {
+  const dispatch = useDispatch();
+  return useQuery(['recently-played'], {
+    queryFn: () => fetchRecentlyPlayed(),
+    onError(err) {
+      const errorMessage = catchAsyncError(err);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
+    },
+  });
+};
+
+const fetchRecommendedPlaylist = async (): Promise<Playlist[]> => {
+  const client = await getClient();
+  const {data} = await client('/profile/auto-generated-playlist');
+  return data.playlist;
+};
+
+export const useFetchRecommendedPlaylist = () => {
+  const dispatch = useDispatch();
+  return useQuery(['recommended-playlist'], {
+    queryFn: () => fetchRecommendedPlaylist(),
+    onError(err) {
+      const errorMessage = catchAsyncError(err);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
+    },
+  });
+};
+
+const fetchIsFavorite = async (id: string): Promise<boolean> => {
+  const client = await getClient();
+  const {data} = await client('/favorite/is-fav?audioId=' + id);
+  return data.result;
+};
+
+export const useFetchIsFavorite = (id: string) => {
+  const dispatch = useDispatch();
+  return useQuery(['favorite', id], {
+    queryFn: () => fetchIsFavorite(id),
+    onError(err) {
+      const errorMessage = catchAsyncError(err);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
+    },
+    enabled: id ? true : false,
   });
 };

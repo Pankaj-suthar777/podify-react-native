@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.250.227:8989';
+const baseURL = 'https://podify-react-native.onrender.com';
 
 import {getFromAsyncStorage, Keys} from '@utils/asyncStorage';
 import axios, {CreateAxiosDefaults} from 'axios';
