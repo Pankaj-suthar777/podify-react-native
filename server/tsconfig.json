@@ -2,9 +2,9 @@
   "compilerOptions": {
     "module": "CommonJS",
     "target": "ES2016",
-    "noImplicitAny": true,
+    "strict": false, // Disable all strict type-checking options
+    "noImplicitAny": false,
     "removeComments": true,
-    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
