@@ -34,7 +34,7 @@ const AudioCard: FC<Props> = ({
       onPress={onPress}
       onLongPress={onLongPress}
       style={[styles.container, containerStyle]}>
-      <View>
+      <View style={styles.posterContainer}>
         <Image source={source} style={styles.poster} />
         <PlayAnimation visible={playing} />
       </View>

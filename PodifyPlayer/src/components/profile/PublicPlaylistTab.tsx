@@ -28,15 +28,16 @@ const PublicPlaylistTab: FC<Props> = props => {
 
   return (
     <ScrollView style={styles.container}>
-      {data?.map(playlist => {
-        return (
-          <PlaylistItem
-            onPress={() => handleOnListPress(playlist)}
-            key={playlist.id}
-            playlist={playlist}
-          />
-        );
-      })}
+      {data &&
+        data?.map((playlist, i) => {
+          return (
+            <PlaylistItem
+              onPress={() => handleOnListPress(playlist)}
+              key={i}
+              playlist={playlist}
+            />
+          );
+        })}
     </ScrollView>
   );
 };

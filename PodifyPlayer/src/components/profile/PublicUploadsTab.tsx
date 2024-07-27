@@ -26,11 +26,11 @@ const PublicUploadsTab: FC<Props> = props => {
 
   return (
     <ScrollView style={styles.container}>
-      {data?.map(item => {
+      {data?.map((item, i) => {
         return (
           <AudioListItem
             onPress={() => onAudioPress(item, data)}
-            key={item.id}
+            key={i}
             audio={item}
             isPlaying={onGoingAudio?.id === item.id}
           />
