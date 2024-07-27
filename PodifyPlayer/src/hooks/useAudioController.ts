@@ -13,7 +13,7 @@ import {
   getPlayerState,
   updateOnGoingAudio,
   updateOnGoingList,
-} from '../store/player';
+} from 'src/store/player';
 
 let isReady = false;
 
@@ -41,16 +41,16 @@ const useAudioController = () => {
   const isPalying = playbackState === State.Playing;
   const isPaused = playbackState === State.Paused;
   const isBusy =
-    playbackState === State.Buffering || playbackState === State.Loading;
+    playbackState === State.Buffering || playbackState === State.Connecting;
 
   const onAudioPress = async (item: AudioData, data: AudioData[]) => {
     if (!isPalyerReady) {
       // Playing audio for the first time.
       await updateQueue(data);
+      dispatch(updateOnGoingAudio(item));
       const index = data.findIndex(audio => audio.id === item.id);
       await TrackPlayer.skip(index);
       await TrackPlayer.play();
-      dispatch(updateOnGoingAudio(item));
       return dispatch(updateOnGoingList(data));
     }
 
@@ -61,7 +61,6 @@ const useAudioController = () => {
 
     if (playbackState === State.Paused && onGoingAudio?.id === item.id) {
       // same audio no need to load handle resume
-
       return await TrackPlayer.play();
     }
 
