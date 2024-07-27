@@ -1,7 +1,4 @@
 import AppView from '@components/AppView';
-// import PublicPlaylistTab from '@components/profile/PublicPlaylistTab';
-// import PublicProfileContainer from '@components/profile/PublicProfileContainer';
-// import PublicUploadsTab from '@components/profile/PublicUploadsTab';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import colors from '@utils/colors';
@@ -13,6 +10,9 @@ import {
 } from 'src/types/navigation';
 import {useFetchPublicProfile} from 'src/hooks/query';
 import React from 'react';
+import PublicProfileContainer from '@components/profile/PublicProfileContainer';
+import PublicUploadsTab from '@components/profile/PublicUploadsTab';
+import PublicPlaylistTab from '@components/profile/PublicPlaylistTab';
 
 type Props = NativeStackScreenProps<
   HomeNavigatorStackParamList,
@@ -28,7 +28,7 @@ const PublicProfile: FC<Props> = ({route}) => {
   return (
     <AppView>
       <View style={styles.container}>
-        {/* <PublicProfileContainer profile={data} />
+        <PublicProfileContainer profile={data} />
 
         <Tab.Navigator
           screenOptions={{
@@ -51,7 +51,7 @@ const PublicProfile: FC<Props> = ({route}) => {
             }}
             initialParams={{profileId}}
           />
-        </Tab.Navigator> */}
+        </Tab.Navigator>
       </View>
     </AppView>
   );

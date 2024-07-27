@@ -17,6 +17,10 @@ import useAudioController from 'src/hooks/useAudioController';
 import AppView from '@components/AppView';
 import RecentlyPlayed from '@components/RecentlyPlayed';
 import RecommendedPlaylist from '@components/RecommendedPlaylist';
+import {
+  updatePlaylistVisbility,
+  updateSelectedListId,
+} from 'src/store/playlistModal';
 
 const Home = () => {
   const [showOptions, setShowOptions] = useState(false);
@@ -94,6 +98,11 @@ const Home = () => {
     }
   };
 
+  const handleOnListPress = (playlist: Playlist) => {
+    dispatch(updateSelectedListId(playlist.id));
+    dispatch(updatePlaylistVisbility(true));
+  };
+
   return (
     <AppView>
       <ScrollView contentContainerStyle={styles.container}>
@@ -116,7 +125,7 @@ const Home = () => {
         </View>
 
         <View style={styles.space}>
-          <RecommendedPlaylist />
+          <RecommendedPlaylist onListPress={handleOnListPress} />
         </View>
 
         <OptionModal

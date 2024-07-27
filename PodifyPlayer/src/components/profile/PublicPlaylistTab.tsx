@@ -1,18 +1,23 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import PlaylistItem from '@ui/PlaylistItem';
 import {FC} from 'react';
-import {View, StyleSheet, Text, ScrollView} from 'react-native';
+import {View, StyleSheet, ScrollView} from 'react-native';
 import {useDispatch} from 'react-redux';
-import {useFetchPlaylist} from 'src/hooks/query';
+import {Playlist} from 'src/types/audio';
+import {PublicProfileTabParamsList} from 'src/types/navigation';
+import {useFetchPublicPlaylist} from 'src/hooks/query';
 import {
   updatePlaylistVisbility,
   updateSelectedListId,
 } from 'src/store/playlistModal';
-import {Playlist} from 'src/types/audio';
 
-interface Props {}
+type Props = NativeStackScreenProps<
+  PublicProfileTabParamsList,
+  'PublicPlaylist'
+>;
 
-const PlaylistTab: FC<Props> = props => {
-  const {data, isLoading} = useFetchPlaylist();
+const PublicPlaylistTab: FC<Props> = props => {
+  const {data} = useFetchPublicPlaylist(props.route.params.profileId);
 
   const dispatch = useDispatch();
 
@@ -40,4 +45,4 @@ const styles = StyleSheet.create({
   container: {},
 });
 
-export default PlaylistTab;
+export default PublicPlaylistTab;

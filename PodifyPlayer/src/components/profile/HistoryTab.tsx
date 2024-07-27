@@ -109,6 +109,7 @@ const HistoryTab = () => {
         {noData ? <EmptyRecords title="There is no history!" /> : null}
 
         {data?.map((item, index) => {
+          console.log(item.date);
           return (
             <View key={item.date + index}>
               <Text style={styles.date}>{item.date}</Text>
@@ -148,7 +149,7 @@ export default HistoryTab;
 
 const styles = StyleSheet.create({
   date: {
-    color: colors.PRIMARY,
+    color: colors.INACTIVE_CONTRAST,
   },
   historyTitle: {
     color: colors.CONTRAST,
