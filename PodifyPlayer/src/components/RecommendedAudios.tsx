@@ -19,10 +19,6 @@ const RecommendedAudios: FC<Props> = ({onAudioLongPress, onAudioPress}) => {
   const {data = [], isLoading} = useFetchRecommendedAudios();
   const {onGoingAudio} = useSelector(getPlayerState);
 
-  const getPoster = (poster?: string) => {
-    return poster ? {uri: poster} : require('../assets/music.png');
-  };
-
   if (isLoading)
     return (
       <PulseAnimationContainer>
@@ -49,7 +45,9 @@ const RecommendedAudios: FC<Props> = ({onAudioLongPress, onAudioPress}) => {
           return (
             <AudioCard
               title={item.title}
-              poster={item.poster}
+              poster={
+                item.poster ? item.poster : require('../assets/music.png')
+              }
               onPress={() => onAudioPress(item, data)}
               onLongPress={() => onAudioLongPress(item, data)}
               containerStyle={{width: '100%', marginRight: 0}}

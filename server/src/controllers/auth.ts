@@ -113,7 +113,6 @@ export const generateForgetPasswordLink: RequestHandler = async (req, res) => {
   if (!user) return res.status(404).json({ error: "Account not found!" });
 
   // generate the link
-  // https://yourapp.com/reset-passwod?token=hfkshf4322hfjkds&userId=67jhfdsahf43
 
   await PasswordResetToken.findOneAndDelete({
     owner: user._id,
