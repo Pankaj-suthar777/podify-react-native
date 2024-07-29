@@ -1,21 +1,17 @@
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useFetchHistories} from 'src/hooks/query';
+import {fetchHistories, useFetchHistories} from 'src/hooks/query';
 import EmptyRecords from '@ui/EmptyRecords';
 import AudioListLoadingUI from '@ui/AudioListLoadingUI';
 import colors from '@utils/colors';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {getClient} from 'src/api/client';
 import {useMutation, useQueryClient} from 'react-query';
 import {useNavigation} from '@react-navigation/native';
 import {History, historyAudio} from 'src/types/audio';
+import PaginatedList from '@ui/PaginatedList';
+import AntDesing from 'react-native-vector-icons/AntDesign';
+
+let pageNo = 0;
 
 const HistoryTab = () => {
   const navigation = useNavigation();
@@ -23,6 +19,8 @@ const HistoryTab = () => {
   const queryClient = useQueryClient();
   const [selectedHistories, setSelectedHistories] = useState<string[]>([]);
   const noData = !data?.length;
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const removeMutation = useMutation({
     mutationFn: async histories => removeHistories(histories),
@@ -60,6 +58,9 @@ const HistoryTab = () => {
   };
 
   const handleOnPress = async (history: historyAudio) => {
+    if (selectedHistories.length === 0) {
+      return;
+    }
     setSelectedHistories(old => {
       if (old.includes(history.id)) {
         return old.filter(item => item !== history.id);
@@ -74,7 +75,37 @@ const HistoryTab = () => {
   };
 
   const handleOnRefresh = () => {
+    pageNo = 0;
+    setHasMore(true);
     queryClient.invalidateQueries({queryKey: ['histories']});
+  };
+
+  const handleOnEndReached = async () => {
+    if (!data || !hasMore || isFetchingMore) return;
+
+    setIsFetchingMore(true);
+    pageNo += 1;
+    const res = await fetchHistories(pageNo);
+    if (!res || !res.length) {
+      setHasMore(false);
+    }
+    const newData = [...data, ...res];
+    const finalData: History[] = [];
+
+    const mergedData = newData.reduce((accumulator, current) => {
+      const foundObj = accumulator.find(item => item.date === current.date);
+
+      if (foundObj) {
+        foundObj.audios = foundObj.audios.concat(current.audios);
+      } else {
+        accumulator.push(current);
+      }
+
+      return accumulator;
+    }, finalData);
+
+    queryClient.setQueryData(['histories'], mergedData);
+    setIsFetchingMore(false);
   };
 
   useEffect(() => {
@@ -98,28 +129,20 @@ const HistoryTab = () => {
           <Text style={styles.removeBtnText}>Remove</Text>
         </Pressable>
       ) : null}
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={isFetching}
-            tintColor={colors.CONTRAST}
-            onRefresh={handleOnRefresh}
-          />
-        }>
-        {noData ? <EmptyRecords title="There is no history!" /> : null}
 
-        {data?.map((item, index) => {
-          console.log(item.date);
+      <PaginatedList
+        data={data}
+        renderItem={({item}) => {
           return (
-            <View key={item.date + index}>
+            <View key={item.date}>
               <Text style={styles.date}>{item.date}</Text>
               <View style={styles.listContainer}>
-                {item.audios.map((audio, i) => {
+                {item.audios.map((audio, index) => {
                   return (
                     <Pressable
                       onLongPress={() => handleOnLongPress(audio)}
                       onPress={() => handleOnPress(audio)}
-                      key={audio.id + i}
+                      key={audio.id + index}
                       style={[
                         styles.history,
                         {
@@ -131,7 +154,7 @@ const HistoryTab = () => {
                       <Text style={styles.historyTitle}>{audio.title}</Text>
                       <Pressable
                         onPress={() => handleSingleHistoryRemove(audio)}>
-                        <AntDesign name="close" color={colors.CONTRAST} />
+                        <AntDesing name="close" color={colors.CONTRAST} />
                       </Pressable>
                     </Pressable>
                   );
@@ -139,8 +162,14 @@ const HistoryTab = () => {
               </View>
             </View>
           );
-        })}
-      </ScrollView>
+        }}
+        onEndReached={handleOnEndReached}
+        ListEmptyComponent={<EmptyRecords title="There is no history!" />}
+        refreshing={isFetching}
+        onRefresh={handleOnRefresh}
+        isFetching={isFetchingMore}
+        hasMore={hasMore}
+      />
     </>
   );
 };

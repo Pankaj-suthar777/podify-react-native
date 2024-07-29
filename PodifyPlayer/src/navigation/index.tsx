@@ -14,6 +14,7 @@ import {
 } from '../store/auth';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
+import RNBootSplash from 'react-native-bootsplash';
 
 interface Props {}
 
@@ -58,7 +59,7 @@ const AppNavigator: FC<Props> = props => {
   }, []);
 
   return (
-    <NavigationContainer theme={AppTheme}>
+    <NavigationContainer onReady={() => RNBootSplash.hide()} theme={AppTheme}>
       {busy ? (
         <View
           style={{

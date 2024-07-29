@@ -1,12 +1,14 @@
-import catchAsyncError from 'src/api/catchError';
-import {useDispatch} from 'react-redux';
-import {upldateNotification} from 'src/store/notification';
-import client, {getClient} from 'src/api/client';
-import {useQuery} from 'react-query';
-import {AudioData, CompletePlaylist, History, Playlist} from 'src/types/audio';
 import {getFromAsyncStorage, Keys} from '@utils/asyncStorage';
+import {useQuery} from 'react-query';
+import {useDispatch} from 'react-redux';
+import {AudioData, CompletePlaylist, History} from 'src/types/audio';
+import catchAsyncError from 'src/api/catchError';
+import {getClient} from 'src/api/client';
+import {upldateNotification} from 'src/store/notification';
+import {Playlist} from 'src/types/audio';
 
-const fetchLastest = async (): Promise<AudioData[]> => {
+const fetchLatest = async (): Promise<AudioData[]> => {
+  const client = await getClient();
   const {data} = await client('/audio/latest');
   return data.audios;
 };
@@ -14,7 +16,7 @@ const fetchLastest = async (): Promise<AudioData[]> => {
 export const useFetchLatestAudios = () => {
   const dispatch = useDispatch();
   return useQuery(['latest-uploads'], {
-    queryFn: () => fetchLastest(),
+    queryFn: () => fetchLatest(),
     onError(err) {
       const errorMessage = catchAsyncError(err);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
@@ -23,6 +25,7 @@ export const useFetchLatestAudios = () => {
 };
 
 const fetchRecommended = async (): Promise<AudioData[]> => {
+  const client = await getClient();
   const {data} = await client('/profile/recommended');
   return data.audios;
 };
@@ -38,14 +41,9 @@ export const useFetchRecommendedAudios = () => {
   });
 };
 
-const fetchPlaylist = async (): Promise<Playlist[]> => {
+export const fetchPlaylist = async (pageNo = 0): Promise<Playlist[]> => {
   const client = await getClient();
-  const token = await getFromAsyncStorage(Keys.AUTH_TOKEN);
-  const {data} = await client('/playlist/by-profile', {
-    headers: {
-      Authorization: 'Bearer ' + token,
-    },
-  });
+  const {data} = await client('/playlist/by-profile?limit=10&pageNo=' + pageNo);
   return data.playlist;
 };
 
@@ -77,9 +75,9 @@ export const useFetchUploadsByProfile = () => {
   });
 };
 
-const fetchFavorites = async (): Promise<AudioData[]> => {
+export const fetchFavorites = async (pageNo = 0): Promise<AudioData[]> => {
   const client = await getClient();
-  const {data} = await client('/favorite');
+  const {data} = await client('/favorite?pageNo=' + pageNo);
   return data.audios;
 };
 
@@ -88,16 +86,15 @@ export const useFetchFavorite = () => {
   return useQuery(['favorite'], {
     queryFn: () => fetchFavorites(),
     onError(err) {
-      console.log(err);
       const errorMessage = catchAsyncError(err);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
     },
   });
 };
 
-const fetchHistories = async (): Promise<History[]> => {
+export const fetchHistories = async (pageNo = 0): Promise<History[]> => {
   const client = await getClient();
-  const {data} = await client('/history');
+  const {data} = await client('/history?limit=15&pageNo=' + pageNo);
   return data.histories;
 };
 
@@ -106,7 +103,6 @@ export const useFetchHistories = () => {
   return useQuery(['histories'], {
     queryFn: () => fetchHistories(),
     onError(err) {
-      console.log(err);
       const errorMessage = catchAsyncError(err);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
     },
@@ -219,16 +215,22 @@ export const useFetchPublicPlaylist = (id: string) => {
   });
 };
 
-const fetchPlaylistAudios = async (id: string): Promise<CompletePlaylist> => {
+const fetchPlaylistAudios = async (
+  id: string,
+  isPrivate: boolean,
+): Promise<CompletePlaylist> => {
+  const endpoint = isPrivate
+    ? '/profile/private-playlist-audios/' + id
+    : '/profile/playlist-audios/' + id;
   const client = await getClient();
-  const {data} = await client('/profile/playlist-audios/' + id);
+  const {data} = await client(endpoint);
   return data.list;
 };
 
-export const useFetchPlaylistAudios = (id: string) => {
+export const useFetchPlaylistAudios = (id: string, isPrivate: boolean) => {
   const dispatch = useDispatch();
   return useQuery(['playlist-audios', id], {
-    queryFn: () => fetchPlaylistAudios(id),
+    queryFn: () => fetchPlaylistAudios(id, isPrivate),
     onError(err) {
       const errorMessage = catchAsyncError(err);
       dispatch(upldateNotification({message: errorMessage, type: 'error'}));
