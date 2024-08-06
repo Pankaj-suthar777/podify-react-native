@@ -70,10 +70,13 @@ const Home = () => {
         title: value.title,
         visibility: value.private ? 'private' : 'public',
       });
-      console.log(data);
+
+      dispatch(
+        upldateNotification({message: 'New lsit added.', type: 'success'}),
+      );
     } catch (error) {
       const errorMessage = catchAsyncError(error);
-      console.log(errorMessage);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
     }
   };
 
@@ -94,7 +97,7 @@ const Home = () => {
       );
     } catch (error) {
       const errorMessage = catchAsyncError(error);
-      console.log(errorMessage);
+      dispatch(upldateNotification({message: errorMessage, type: 'error'}));
     }
   };
 
