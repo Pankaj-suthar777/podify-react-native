@@ -31,7 +31,7 @@ const generatedPlaylist = async () => {
   });
 };
 
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("*/12 * * * *", async () => {
   // this will run on every 24 hrs
   await generatedPlaylist();
 });
